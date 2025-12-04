@@ -26,3 +26,5 @@ MDVisualizer-1.5:
 - Bumped Vrui version requirement to 14.1-001.
 - Bumped Vrui Collaboration Infrastructure version requirement to 10.3.
 - Adapted to changes in Vrui and Collaboration Infrastructure.
+
+MDVisualizer-1.6:
