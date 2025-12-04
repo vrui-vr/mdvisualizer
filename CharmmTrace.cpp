@@ -1,7 +1,23 @@
 /***********************************************************************
 CharmmTrace - Class for molecular dynamics simulation traces in CHARMM
 format.
-Copyright (c) 2019 Oliver Kreylos
+Copyright (c) 2019-2025 Oliver Kreylos
+
+This file is part of the MD Visualizer (MDVisualizer).
+
+The MD Visualizer is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License as published
+by the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+
+The MD Visualizer is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with the MD Visualizer; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
 #include "CharmmTrace.h"
@@ -9,9 +25,9 @@ Copyright (c) 2019 Oliver Kreylos
 #include <ctype.h>
 #include <stdio.h>
 #include <algorithm>
+#include <Misc/StdError.h>
 #include <Misc/FileNameExtensions.h>
 #include <Misc/PrintfTemplateTests.h>
-#include <Misc/ThrowStdErr.h>
 #include <IO/OpenFile.h>
 #include <IO/ValueSource.h>
 
@@ -29,7 +45,7 @@ CharmmTrace::CharmmTrace(const char* sTraceFileNameTemplate)
 	/* Check if the file name template is valid: */
 	unsigned int conversionStart,conversionLength;
 	if(!Misc::isValidTemplate(traceFileNameTemplate,'u',1024,&conversionStart,&conversionLength))
-		Misc::throwStdErr("CharmmTrace: %s is not a valid trace file name template",sTraceFileNameTemplate);
+		throw Misc::makeStdErr(__PRETTY_FUNCTION__,"%s is not a valid trace file name template",sTraceFileNameTemplate);
 	
 	/* Find all files in the base directory that match the file name template: */
 	while(baseDirectory->readNextEntry())
@@ -125,7 +141,7 @@ CharmmTrace::CharmmTrace(const char* sTraceFileNameTemplate)
 		bbox.addPoint(position);
 		}
 	if(i<numAtoms)
-		Misc::throwStdErr("CharmmTrace: Trace file %u is not a valid CHARMM trace file",timeStepNumbers.front());
+		throw Misc::makeStdErr(__PRETTY_FUNCTION__,"Trace file %u is not a valid CHARMM trace file",timeStepNumbers.front());
 	}
 
 CharmmTrace::~CharmmTrace(void)
@@ -172,7 +188,7 @@ void CharmmTrace::loadAtoms(size_t timeStepIndex,Atom atoms[])
 	/* Read the number of atoms: */
 	size_t fileNumAtoms=traceFile.readUnsignedInteger();
 	if(fileNumAtoms!=numAtoms)
-		Misc::throwStdErr("CharmmTrace: Trace file %u has mismatching number of atoms",timeStepNumbers[timeStepIndex]);
+		throw Misc::makeStdErr(__PRETTY_FUNCTION__,"Trace file %u has mismatching number of atoms",timeStepNumbers[timeStepIndex]);
 	traceFile.skipLine();
 	traceFile.skipWs();
 	
@@ -204,7 +220,7 @@ void CharmmTrace::loadAtoms(size_t timeStepIndex,Atom atoms[])
 		traceFile.skipWs();
 		}
 	if(i<numAtoms)
-		Misc::throwStdErr("CharmmTrace: Trace file %u is not a valid CHARMM trace file",timeStepNumbers[timeStepIndex]);
+		throw Misc::makeStdErr(__PRETTY_FUNCTION__,"Trace file %u is not a valid CHARMM trace file",timeStepNumbers[timeStepIndex]);
 	}
 
 }

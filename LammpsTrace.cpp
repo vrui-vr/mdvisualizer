@@ -1,13 +1,29 @@
 /***********************************************************************
 LammpsTrace - Class for molecular dynamics simulation traces produced by
 the LAMMPS MD simulation code.
-Copyright (c) 2019 Oliver Kreylos
+Copyright (c) 2019-2025 Oliver Kreylos
+
+This file is part of the MD Visualizer (MDVisualizer).
+
+The MD Visualizer is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License as published
+by the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+
+The MD Visualizer is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with the MD Visualizer; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
 #include "LammpsTrace.h"
 
 #include <string>
-#include <Misc/ThrowStdErr.h>
+#include <Misc/StdError.h>
 #include <Misc/MessageLogger.h>
 #include <IO/OpenFile.h>
 #include <IO/ValueSource.h>
@@ -23,7 +39,7 @@ Helper functions:
 void checkItem(IO::ValueSource& file,const char* item) // Checks an ITEM: line in a Lammp file
 	{
 	if(!file.isLiteral("ITEM:")||!file.isString(item)||!file.isLiteral('\n'))
-		Misc::throwStdErr("Missing %s item",item);
+		throw Misc::makeStdErr(0,"Missing %s item",item);
 	}
 
 void checkEndline(IO::ValueSource& file) // Checks whether the next literal is a line end
@@ -93,7 +109,7 @@ LammpsTrace::LammpsTrace(const char* metaDataFileName,const char* traceFileName)
 			
 			/* Skip the end-of-line: */
 			if(!metaData.isLiteral('\n'))
-				Misc::throwStdErr("LammpsTrace::LammpsTrace: Missing line end in meta data file %s",metaDataFileName);
+				throw Misc::makeStdErr(__PRETTY_FUNCTION__,"Missing line end in meta data file %s",metaDataFileName);
 			}
 		}
 	
@@ -159,7 +175,7 @@ LammpsTrace::LammpsTrace(const char* metaDataFileName,const char* traceFileName)
 		}
 	catch(const std::runtime_error& err)
 		{
-		Misc::formattedLogWarning("LammpsTrace::LammpsTrace: Stopped reading trace file %s after %u time steps due to exception %s",traceFileName,(unsigned int)(timeSteps.size()),err.what());
+		Misc::sourcedLogWarning(__PRETTY_FUNCTION__,"Stopped reading trace file %s after %u time steps due to exception %s",traceFileName,(unsigned int)(timeSteps.size()),err.what());
 		}
 	}
 
